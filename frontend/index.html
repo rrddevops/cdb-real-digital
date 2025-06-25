@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBD Real Digital - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --dark-color: #212529;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), #0056b3);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), #0056b3);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: bold;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, var(--success-color), #146c43);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: bold;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, var(--warning-color), #e0a800);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: bold;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+        .balance-card {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .transaction-card {
+            background: linear-gradient(45deg, #007bff, #6610f2);
+            color: white;
+        }
+
+        .swap-card {
+            background: linear-gradient(45deg, #fd7e14, #e83e8c);
+            color: white;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .status-pending {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        .status-error {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .nav-tabs .nav-link {
+            border-radius: 10px 10px 0 0;
+            border: none;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(45deg, var(--primary-color), #0056b3);
+            color: white;
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .loading.show {
+            display: inline-block;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-coins me-2"></i>
+                CBD Real Digital
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    <i class="fas fa-user me-1"></i>
+                    <span id="accountAddress">Conectando...</span>
+                </span>
+                <button class="btn btn-outline-light btn-sm" onclick="connectWallet()">
+                    <i class="fas fa-wallet me-1"></i>
+                    Conectar Carteira
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Balance Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card balance-card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">
+                            <i class="fas fa-dollar-sign me-2"></i>
+                            Real Digital
+                        </h5>
+                        <h3 class="card-text" id="realDigitalBalance">0.00</h3>
+                        <small>Saldo Disponível</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card balance-card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">
+                            <i class="fas fa-certificate me-2"></i>
+                            TPFt
+                        </h5>
+                        <h3 class="card-text" id="tpftBalance">0</h3>
+                        <small>Tokens TPFt</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card balance-card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">
+                            <i class="fas fa-exchange-alt me-2"></i>
+                            Swaps Ativos
+                        </h5>
+                        <h3 class="card-text" id="activeSwaps">0</h3>
+                        <small>Operações Pendentes</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="mainTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="swap-tab" data-bs-toggle="tab" data-bs-target="#swap" type="button" role="tab">
+                            <i class="fas fa-exchange-alt me-2"></i>Troca de Tokens
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="deposit-tab" data-bs-toggle="tab" data-bs-target="#deposit" type="button" role="tab">
+                            <i class="fas fa-plus-circle me-2"></i>Depósitos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="transactions-tab" data-bs-toggle="tab" data-bs-target="#transactions" type="button" role="tab">
+                            <i class="fas fa-history me-2"></i>Histórico
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">
+                            <i class="fas fa-cog me-2"></i>Configurações
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="mainTabsContent">
+                    <!-- Dashboard Tab -->
+                    <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5><i class="fas fa-chart-line me-2"></i>Atividade Recente</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Valor</th>
+                                                <th>Status</th>
+                                                <th>Data</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recentActivity">
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted">
+                                                    Nenhuma atividade recente
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h5><i class="fas fa-info-circle me-2"></i>Informações da Rede</h5>
+                                <div class="list-group">
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Status da Rede:</span>
+                                        <span class="status-badge status-success">Conectado</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Último Bloco:</span>
+                                        <span id="lastBlock">-</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Gas Price:</span>
+                                        <span id="gasPrice">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Swap Tab -->
+                    <div class="tab-pane fade" id="swap" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-exchange-alt me-2"></i>
+                                            Trocar Real Digital por TPFt
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="swapForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">Quantidade de Real Digital</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="swapAmount" placeholder="0.00" step="0.01">
+                                                    <span class="input-group-text">DREX</span>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Token TPFt</label>
+                                                <select class="form-select" id="tpftToken">
+                                                    <option value="1">TPFt Série 1</option>
+                                                    <option value="2">TPFt Série 2</option>
+                                                    <option value="3">TPFt Série 3</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Quantidade de TPFt</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="tpftAmount" placeholder="0" readonly>
+                                                    <span class="input-group-text">TPFt</span>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Taxa de Câmbio</label>
+                                                <input type="text" class="form-control" id="exchangeRate" value="1 DREX = 1 TPFt" readonly>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="fas fa-exchange-alt me-2"></i>
+                                                Iniciar Troca
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-list me-2"></i>
+                                            Swaps Ativos
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="activeSwapsList">
+                                            <p class="text-muted text-center">Nenhum swap ativo</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deposit Tab -->
+                    <div class="tab-pane fade" id="deposit" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-plus-circle me-2"></i>
+                                            Depósito de Real Digital
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="depositErc20Form">
+                                            <div class="mb-3">
+                                                <label class="form-label">Quantidade</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="depositAmount" placeholder="0.00" step="0.01">
+                                                    <span class="input-group-text">DREX</span>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Conta Destino</label>
+                                                <input type="text" class="form-control" id="depositAccount" placeholder="0x...">
+                                            </div>
+                                            <button type="submit" class="btn btn-success w-100">
+                                                <i class="fas fa-plus-circle me-2"></i>
+                                                Depositar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-certificate me-2"></i>
+                                            Depósito de TPFt
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="depositErc1155Form">
+                                            <div class="mb-3">
+                                                <label class="form-label">Token ID</label>
+                                                <input type="number" class="form-control" id="tpftTokenId" placeholder="1">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Quantidade</label>
+                                                <input type="number" class="form-control" id="tpftDepositAmount" placeholder="0">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Conta Destino</label>
+                                                <input type="text" class="form-control" id="tpftDepositAccount" placeholder="0x...">
+                                            </div>
+                                            <button type="submit" class="btn btn-success w-100">
+                                                <i class="fas fa-certificate me-2"></i>
+                                                Depositar TPFt
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transactions Tab -->
+                    <div class="tab-pane fade" id="transactions" role="tabpanel">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5><i class="fas fa-history me-2"></i>Histórico de Transações</h5>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="refreshTransactions()">
+                                        <i class="fas fa-sync-alt me-1"></i>
+                                        Atualizar
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Tipo</th>
+                                                <th>Valor</th>
+                                                <th>De</th>
+                                                <th>Para</th>
+                                                <th>Status</th>
+                                                <th>Data</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="transactionsTable">
+                                            <tr>
+                                                <td colspan="8" class="text-center text-muted">
+                                                    Nenhuma transação encontrada
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div class="tab-pane fade" id="settings" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-cog me-2"></i>
+                                            Configurações da Conta
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="accountSettingsForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">Endereço da Carteira</label>
+                                                <input type="text" class="form-control" id="walletAddress" readonly>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Nome da Conta</label>
+                                                <input type="text" class="form-control" id="accountName" placeholder="Minha Conta">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Email</label>
+                                                <input type="email" class="form-control" id="accountEmail" placeholder="seu@email.com">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-2"></i>
+                                                Salvar Configurações
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-network-wired me-2"></i>
+                                            Configurações da Rede
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="networkSettingsForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">RPC URL</label>
+                                                <input type="text" class="form-control" id="rpcUrl" value="ws://localhost:8545">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Chain ID</label>
+                                                <input type="number" class="form-control" id="chainId" value="381660001">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Contrato Real Digital</label>
+                                                <input type="text" class="form-control" id="realDigitalContract" value="0x3A34C530700E3835794eaE04d2a4F22Ce750eF7e">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Contrato TPFt</label>
+                                                <input type="text" class="form-control" id="tpftContract" value="0x4ABDE28B04315C05a4141a875f9B33c9d1440a8E">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-2"></i>
+                                                Salvar Configurações
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container">
+        <div class="toast" id="notificationToast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">Notificação</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                Mensagem da notificação
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 

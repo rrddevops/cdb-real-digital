@@ -1,0 +1,57 @@
+# Configuração de exemplo para o nó do participante
+# Copie este arquivo para config.toml e edite conforme necessário
+
+# Informações do Nó
+data-path="/caminho/para/a/pasta/data"
+genesis-file="/caminho/para/o/arquivo/genesis.json"
+revert-reason-enabled=true
+identity="fullnode-seu-participante-1"
+
+logging="INFO"
+
+# Método NAT (DOCKER | KUBERNETES | AUTO | NONE)
+nat-method="NONE"
+
+min-gas-price=0
+
+# Pool de Transações
+tx-pool="sequenced"   
+tx-pool-retention-hours=1   
+tx-pool-limit-by-account-percentage=1   
+tx-pool-max-size=2500
+
+# Rede P2P
+p2p-enabled=true
+discovery-enabled=false
+static-nodes-file="/caminho/para/o/arquivo/static-nodes.json"
+p2p-port=30303
+max-peers=25
+remote-connections-limit-enabled=false
+host-allowlist=["*"]
+
+# JSON-RPC
+rpc-http-api=["DEBUG", "ETH", "ADMIN", "WEB3", "QBFT", "NET", "PERM", "TXPOOL", "PLUGINS", "MINER", "TRACE"]
+rpc-http-cors-origins=["*"]
+rpc-http-enabled=true
+rpc-http-host="0.0.0.0"
+rpc-http-port=8545
+rpc-http-max-active-connections=2000
+
+# WebSockets API
+rpc-ws-enabled=true
+rpc-ws-host="0.0.0.0"
+rpc-ws-port=8546
+rpc-ws-api=["DEBUG", "ETH", "ADMIN", "WEB3", "QBFT", "NET", "PERM", "TXPOOL", "PLUGINS", "MINER", "TRACE"]
+rpc-ws-authentication-enabled=false
+
+# Métricas
+metrics-enabled=false
+metrics-host="0.0.0.0"
+metrics-port=9545
+
+# Permissionamento (utilizar esses parâmetros para habilitar a permissão)
+permissions-nodes-contract-enabled=true
+permissions-nodes-contract-address="0x0000000000000000000000000000000000009999"
+permissions-nodes-contract-version=2
+permissions-accounts-contract-enabled=true
+permissions-accounts-contract-address="0x359e4Ac15c34db530DC61C93D3E646103A569a0A" 

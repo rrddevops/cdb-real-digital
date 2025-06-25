@@ -1,0 +1,24 @@
+{
+  "name": "zapp-service",
+  "version": "1.0.0",
+  "description": "ZApp service for CBD Real Digital",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^5.7.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "axios": "^1.5.0",
+    "web3": "^4.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["zapp", "blockchain", "cbd"],
+  "author": "Banco Central do Brasil",
+  "license": "MIT"
+} 
