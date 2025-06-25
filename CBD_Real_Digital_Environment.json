@@ -1,0 +1,85 @@
+{
+    "id": "cbd-real-digital-env",
+    "name": "CBD Real Digital",
+    "values": [
+        {
+            "key": "base_url_zapp",
+            "value": "http://localhost:3000",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "base_url_timber",
+            "value": "http://localhost:3100",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "base_url_zokrates",
+            "value": "http://localhost:8080",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "test_account",
+            "value": "0x1234567890abcdef1234567890abcdef12345678",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "recipient_account",
+            "value": "0xabcdef1234567890abcdef1234567890abcdef12",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "real_digital_contract",
+            "value": "0x3A34C530700E3835794eaE04d2a4F22Ce750eF7e",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "tpft_contract",
+            "value": "0x4ABDE28B04315C05a4141a875f9B33c9d1440a8E",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "rpc_url",
+            "value": "ws://localhost:8545",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "chain_id",
+            "value": "381660001",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "commitment_id",
+            "value": "",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "swap_id",
+            "value": "",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "start_date",
+            "value": "2025-06-01",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "end_date",
+            "value": "2025-06-30",
+            "type": "default",
+            "enabled": true
+        }
+    ],
+    "_postman_variable_scope": "environment"
+}

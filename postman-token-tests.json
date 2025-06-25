@@ -1,0 +1,993 @@
+{
+	"info": {
+		"_postman_id": "cbd-token-transfer-tests",
+		"name": "CBD Real Digital - Token Transfer Tests",
+		"description": "Testes específicos para envio e transferência de tokens no CBD Real Digital\n\nFoca em:\n- Transferências de Real Digital\n- Transferências de TPFt\n- Swaps entre tokens\n- Validações de saldo\n- Testes de performance\n\nBanco Central do Brasil - Projeto Piloto DREX",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "cbd-token-tests"
+	},
+	"item": [
+		{
+			"name": "🔍 Pré-requisitos",
+			"item": [
+				{
+					"name": "Check Environment Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zapp}}/status",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"status"
+							]
+						},
+						"description": "Verifica se o ambiente está pronto para testes"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Environment is ready', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.status).to.equal('ready');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Setup Test Accounts",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accounts\": [\n        {\n            \"address\": \"{{test_account}}\",\n            \"name\": \"Test Account 1\"\n        },\n        {\n            \"address\": \"{{recipient_account}}\",\n            \"name\": \"Test Account 2\"\n        },\n        {\n            \"address\": \"0x9876543210fedcba9876543210fedcba98765432\",\n            \"name\": \"Test Account 3\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/setupTestAccounts",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"setupTestAccounts"
+							]
+						},
+						"description": "Configura contas de teste para os experimentos"
+					},
+					"response": []
+				}
+			],
+			"description": "Verificações e configurações necessárias antes dos testes"
+		},
+		{
+			"name": "💰 Setup de Saldos",
+			"item": [
+				{
+					"name": "Deposit Real Digital - Account 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 5000.00,\n    \"account\": \"{{test_account}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/depositErc20",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"depositErc20"
+							]
+						},
+						"description": "Deposita 5000 DREX na conta de teste 1"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Deposit successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.status).to.equal('success');",
+									"    if (response.data && response.data.commitmentId) {",
+									"        pm.globals.set('deposit_commitment_1', response.data.commitmentId);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Deposit TPFt Series 1 - Account 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tokenId\": 1,\n    \"amount\": 1000,\n    \"account\": \"{{test_account}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/depositErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"depositErc1155"
+							]
+						},
+						"description": "Deposita 1000 TPFt Série 1 na conta de teste 1"
+					},
+					"response": []
+				},
+				{
+					"name": "Deposit TPFt Series 2 - Account 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tokenId\": 2,\n    \"amount\": 500,\n    \"account\": \"{{test_account}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/depositErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"depositErc1155"
+							]
+						},
+						"description": "Deposita 500 TPFt Série 2 na conta de teste 1"
+					},
+					"response": []
+				},
+				{
+					"name": "Deposit Real Digital - Account 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 2000.00,\n    \"account\": \"{{recipient_account}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/depositErc20",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"depositErc20"
+							]
+						},
+						"description": "Deposita 2000 DREX na conta de teste 2"
+					},
+					"response": []
+				}
+			],
+			"description": "Configuração de saldos iniciais para os testes"
+		},
+		{
+			"name": "📤 Transferências Real Digital",
+			"item": [
+				{
+					"name": "Transfer Small Amount",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"{{recipient_account}}\",\n    \"amount\": 100.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/transfer",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transfer"
+							]
+						},
+						"description": "Transfere 100 DREX para testar operação básica"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Transfer successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.status).to.equal('success');",
+									"    pm.expect(response.data.amount).to.equal(100.00);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Transfer Medium Amount",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"{{recipient_account}}\",\n    \"amount\": 500.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/transfer",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transfer"
+							]
+						},
+						"description": "Transfere 500 DREX para testar operação média"
+					},
+					"response": []
+				},
+				{
+					"name": "Transfer Large Amount",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"{{recipient_account}}\",\n    \"amount\": 1000.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/transfer",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transfer"
+							]
+						},
+						"description": "Transfere 1000 DREX para testar operação grande"
+					},
+					"response": []
+				},
+				{
+					"name": "Transfer to Multiple Accounts",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transfers\": [\n        {\n            \"to\": \"{{recipient_account}}\",\n            \"amount\": 200.00\n        },\n        {\n            \"to\": \"0x9876543210fedcba9876543210fedcba98765432\",\n            \"amount\": 300.00\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/bulkTransfer",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"bulkTransfer"
+							]
+						},
+						"description": "Transfere para múltiplas contas simultaneamente"
+					},
+					"response": []
+				}
+			],
+			"description": "Testes de transferência de Real Digital (DREX)"
+		},
+		{
+			"name": "🎫 Transferências TPFt",
+			"item": [
+				{
+					"name": "Transfer TPFt Series 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"{{recipient_account}}\",\n    \"tokenId\": 1,\n    \"amount\": 50\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/transferErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transferErc1155"
+							]
+						},
+						"description": "Transfere 50 TPFt Série 1"
+					},
+					"response": []
+				},
+				{
+					"name": "Transfer TPFt Series 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"{{recipient_account}}\",\n    \"tokenId\": 2,\n    \"amount\": 100\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/transferErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transferErc1155"
+							]
+						},
+						"description": "Transfere 100 TPFt Série 2"
+					},
+					"response": []
+				},
+				{
+					"name": "Transfer Multiple TPFt Types",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transfers\": [\n        {\n            \"to\": \"{{recipient_account}}\",\n            \"tokenId\": 1,\n            \"amount\": 25\n        },\n        {\n            \"to\": \"{{recipient_account}}\",\n            \"tokenId\": 2,\n            \"amount\": 50\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/bulkTransferErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"bulkTransferErc1155"
+							]
+						},
+						"description": "Transfere múltiplos tipos de TPFt simultaneamente"
+					},
+					"response": []
+				}
+			],
+			"description": "Testes de transferência de TPFt (Títulos Públicos Federais tokenizados)"
+		},
+		{
+			"name": "🔄 Swaps de Tokens",
+			"item": [
+				{
+					"name": "Start Swap - DREX to TPFt Series 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"erc20Address\": \"{{real_digital_contract}}\",\n    \"counterParty\": \"{{recipient_account}}\",\n    \"amountSent\": 500,\n    \"tokenIdReceived\": 1,\n    \"tokenReceivedAmount\": 50\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/startSwapFromErc20ToErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"startSwapFromErc20ToErc1155"
+							]
+						},
+						"description": "Inicia swap de 500 DREX por 50 TPFt Série 1"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Swap started successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.status).to.equal('success');",
+									"    if (response.data && response.data.swapId) {",
+									"        pm.globals.set('active_swap_id', response.data.swapId);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Complete Swap",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"swapId\": \"{{active_swap_id}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/completeSwapFromErc20ToErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"completeSwapFromErc20ToErc1155"
+							]
+						},
+						"description": "Completa o swap iniciado"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Swap - DREX to TPFt Series 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"erc20Address\": \"{{real_digital_contract}}\",\n    \"counterParty\": \"{{recipient_account}}\",\n    \"amountSent\": 1000,\n    \"tokenIdReceived\": 2,\n    \"tokenReceivedAmount\": 100\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/startSwapFromErc20ToErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"startSwapFromErc20ToErc1155"
+							]
+						},
+						"description": "Inicia swap de 1000 DREX por 100 TPFt Série 2"
+					},
+					"response": []
+				}
+			],
+			"description": "Testes de swap entre Real Digital e TPFt"
+		},
+		{
+			"name": "📊 Validações e Consultas",
+			"item": [
+				{
+					"name": "Get Account Balance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zapp}}/balance?account={{test_account}}",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"balance"
+							],
+							"query": [
+								{
+									"key": "account",
+									"value": "{{test_account}}"
+								}
+							]
+						},
+						"description": "Consulta saldo da conta de teste"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transfer History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zapp}}/transfers?account={{test_account}}&limit=10",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transfers"
+							],
+							"query": [
+								{
+									"key": "account",
+									"value": "{{test_account}}"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Consulta histórico de transferências"
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": \"{{test_account}}\",\n    \"to\": \"{{recipient_account}}\",\n    \"amount\": 100.00,\n    \"tokenType\": \"erc20\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/validateTransaction",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"validateTransaction"
+							]
+						},
+						"description": "Valida se uma transação pode ser executada"
+					},
+					"response": []
+				}
+			],
+			"description": "Validações e consultas de saldos e histórico"
+		},
+		{
+			"name": "🧪 Testes de Performance",
+			"item": [
+				{
+					"name": "Concurrent Transfers Test",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transfers\": [\n        {\n            \"to\": \"{{recipient_account}}\",\n            \"amount\": 10.00\n        },\n        {\n            \"to\": \"{{recipient_account}}\",\n            \"amount\": 20.00\n        },\n        {\n            \"to\": \"{{recipient_account}}\",\n            \"amount\": 30.00\n        },\n        {\n            \"to\": \"{{recipient_account}}\",\n            \"amount\": 40.00\n        },\n        {\n            \"to\": \"{{recipient_account}}\",\n            \"amount\": 50.00\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/bulkTransfer",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"bulkTransfer"
+							]
+						},
+						"description": "Teste de múltiplas transferências simultâneas"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Performance test passed', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.data.transfers).to.have.length(5);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Large Amount Transfer Test",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"{{recipient_account}}\",\n    \"amount\": 5000.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/transfer",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transfer"
+							]
+						},
+						"description": "Teste de transferência de grande quantidade"
+					},
+					"response": []
+				}
+			],
+			"description": "Testes de performance e carga"
+		},
+		{
+			"name": "❌ Testes de Erro",
+			"item": [
+				{
+					"name": "Transfer Insufficient Balance",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"{{recipient_account}}\",\n    \"amount\": 100000.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/transfer",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transfer"
+							]
+						},
+						"description": "Testa transferência com saldo insuficiente"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Insufficient balance error handled', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.status).to.equal('error');",
+									"    pm.expect(response.message).to.include('insufficient');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Transfer Invalid Address",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"0xinvalid\",\n    \"amount\": 100.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/transfer",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transfer"
+							]
+						},
+						"description": "Testa transferência para endereço inválido"
+					},
+					"response": []
+				},
+				{
+					"name": "Transfer Zero Amount",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"{{recipient_account}}\",\n    \"amount\": 0.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/transfer",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transfer"
+							]
+						},
+						"description": "Testa transferência com valor zero"
+					},
+					"response": []
+				}
+			],
+			"description": "Testes de tratamento de erros"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Script de pré-requisição para testes de token",
+					"console.log('Executando teste de token: ' + pm.request.name);",
+					"",
+					"// Definir timestamp para logs",
+					"pm.globals.set('test_timestamp', new Date().toISOString());",
+					"",
+					"// Gerar ID único para o teste",
+					"pm.globals.set('test_id', Math.random().toString(36).substr(2, 9));"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Script de teste para validações de token",
+					"console.log('Validando resposta do teste de token');",
+					"",
+					"// Verificar se a resposta foi bem-sucedida",
+					"pm.test('Status code is 200 or 400', function () {",
+					"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+					"});",
+					"",
+					"// Verificar se a resposta é JSON válido",
+					"pm.test('Response is JSON', function () {",
+					"    pm.response.to.be.json;",
+					"});",
+					"",
+					"// Verificar tempo de resposta para testes de performance",
+					"pm.test('Response time is acceptable', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+					"});",
+					"",
+					"// Verificar estrutura da resposta",
+					"if (pm.response.json()) {",
+					"    pm.test('Response has required structure', function () {",
+					"        const response = pm.response.json();",
+					"        pm.expect(response).to.have.property('status');",
+					"        if (response.status === 'success') {",
+					"            pm.expect(response).to.have.property('data');",
+					"        }",
+					"    });",
+					"}",
+					"",
+					"// Salvar dados importantes para próximas requisições",
+					"if (pm.response.json() && pm.response.json().data) {",
+					"    if (pm.response.json().data.commitmentId) {",
+					"        pm.globals.set('last_commitment_id', pm.response.json().data.commitmentId);",
+					"    }",
+					"    if (pm.response.json().data.swapId) {",
+					"        pm.globals.set('last_swap_id', pm.response.json().data.swapId);",
+					"    }",
+					"    if (pm.response.json().data.transactionId) {",
+					"        pm.globals.set('last_transaction_id', pm.response.json().data.transactionId);",
+					"    }",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url_zapp",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "test_account",
+			"value": "0x1234567890abcdef1234567890abcdef12345678",
+			"type": "string"
+		},
+		{
+			"key": "recipient_account",
+			"value": "0xabcdef1234567890abcdef1234567890abcdef12",
+			"type": "string"
+		},
+		{
+			"key": "real_digital_contract",
+			"value": "0x3A34C530700E3835794eaE04d2a4F22Ce750eF7e",
+			"type": "string"
+		},
+		{
+			"key": "tpft_contract",
+			"value": "0x4ABDE28B04315C05a4141a875f9B33c9d1440a8E",
+			"type": "string"
+		}
+	]
+} 

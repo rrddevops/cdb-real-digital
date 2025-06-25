@@ -1,0 +1,842 @@
+{
+	"info": {
+		"_postman_id": "cbd-real-digital-api-tests",
+		"name": "CBD Real Digital - API Tests",
+		"description": "Coleção completa para testar as APIs do CBD Real Digital (DREX)\n\nInclui testes para:\n- Depósitos (Real Digital e TPFt)\n- Swaps (Real Digital ↔ TPFt)\n- Consultas e status\n- Configurações\n\nBanco Central do Brasil - Projeto Piloto DREX",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "cbd-real-digital"
+	},
+	"item": [
+		{
+			"name": "🔍 Health Check",
+			"item": [
+				{
+					"name": "ZApp API Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zapp}}/",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Verifica se a API ZApp está respondendo"
+					},
+					"response": []
+				},
+				{
+					"name": "Timber API Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_timber}}/",
+							"host": [
+								"{{base_url_timber}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Verifica se a API Timber está respondendo"
+					},
+					"response": []
+				},
+				{
+					"name": "Zokrates Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zokrates}}/",
+							"host": [
+								"{{base_url_zokrates}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Verifica se o Zokrates está respondendo"
+					},
+					"response": []
+				}
+			],
+			"description": "Testes de saúde das APIs"
+		},
+		{
+			"name": "📊 Consultas e Status",
+			"item": [
+				{
+					"name": "Get All Commitments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zapp}}/getAllCommitments",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"getAllCommitments"
+							]
+						},
+						"description": "Obtém todos os commitments (transações) do sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Commitment by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zapp}}/getCommitment?commitmentId={{commitment_id}}",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"getCommitment"
+							],
+							"query": [
+								{
+									"key": "commitmentId",
+									"value": "{{commitment_id}}",
+									"description": "ID do commitment a ser consultado"
+								}
+							]
+						},
+						"description": "Obtém um commitment específico por ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Timber Logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_timber}}/logs",
+							"host": [
+								"{{base_url_timber}}"
+							],
+							"path": [
+								"logs"
+							]
+						},
+						"description": "Obtém logs do sistema Timber"
+					},
+					"response": []
+				},
+				{
+					"name": "Get System Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zapp}}/status",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"status"
+							]
+						},
+						"description": "Obtém status geral do sistema"
+					},
+					"response": []
+				}
+			],
+			"description": "Consultas e verificações de status do sistema"
+		},
+		{
+			"name": "💰 Depósitos",
+			"item": [
+				{
+					"name": "Deposit Real Digital (ERC-20)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 1000.00,\n    \"account\": \"{{test_account}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/depositErc20",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"depositErc20"
+							]
+						},
+						"description": "Deposita Real Digital (DREX) na conta especificada\n\nParâmetros:\n- amount: Quantidade em DREX\n- account: Endereço da conta de destino"
+					},
+					"response": []
+				},
+				{
+					"name": "Deposit TPFt (ERC-1155)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tokenId\": 1,\n    \"amount\": 100,\n    \"account\": \"{{test_account}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/depositErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"depositErc1155"
+							]
+						},
+						"description": "Deposita TPFt (Títulos Públicos Federais tokenizados) na conta especificada\n\nParâmetros:\n- tokenId: ID do token TPFt (1, 2, 3)\n- amount: Quantidade de tokens\n- account: Endereço da conta de destino"
+					},
+					"response": []
+				},
+				{
+					"name": "Deposit Large Amount Real Digital",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 10000.00,\n    \"account\": \"{{test_account}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/depositErc20",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"depositErc20"
+							]
+						},
+						"description": "Depósito de grande quantidade de Real Digital para testes"
+					},
+					"response": []
+				},
+				{
+					"name": "Deposit Multiple TPFt Series",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tokenId\": 2,\n    \"amount\": 500,\n    \"account\": \"{{test_account}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/depositErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"depositErc1155"
+							]
+						},
+						"description": "Depósito de TPFt Série 2"
+					},
+					"response": []
+				}
+			],
+			"description": "Operações de depósito de Real Digital e TPFt"
+		},
+		{
+			"name": "🔄 Swaps",
+			"item": [
+				{
+					"name": "Start Swap - Real Digital to TPFt",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"erc20Address\": \"{{real_digital_contract}}\",\n    \"counterParty\": \"{{test_account}}\",\n    \"amountSent\": 1000,\n    \"tokenIdReceived\": 1,\n    \"tokenReceivedAmount\": 100\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/startSwapFromErc20ToErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"startSwapFromErc20ToErc1155"
+							]
+						},
+						"description": "Inicia um swap de Real Digital para TPFt\n\nParâmetros:\n- erc20Address: Endereço do contrato Real Digital\n- counterParty: Contraparte da operação\n- amountSent: Quantidade de Real Digital enviada\n- tokenIdReceived: ID do token TPFt recebido\n- tokenReceivedAmount: Quantidade de TPFt recebida"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Swap - Large Amount",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"erc20Address\": \"{{real_digital_contract}}\",\n    \"counterParty\": \"{{test_account}}\",\n    \"amountSent\": 5000,\n    \"tokenIdReceived\": 1,\n    \"tokenReceivedAmount\": 500\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/startSwapFromErc20ToErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"startSwapFromErc20ToErc1155"
+							]
+						},
+						"description": "Swap de grande quantidade para testes de performance"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Swap - TPFt Series 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"erc20Address\": \"{{real_digital_contract}}\",\n    \"counterParty\": \"{{test_account}}\",\n    \"amountSent\": 2000,\n    \"tokenIdReceived\": 2,\n    \"tokenReceivedAmount\": 200\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/startSwapFromErc20ToErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"startSwapFromErc20ToErc1155"
+							]
+						},
+						"description": "Swap para TPFt Série 2"
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Swap",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"swapId\": \"{{swap_id}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/completeSwapFromErc20ToErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"completeSwapFromErc20ToErc1155"
+							]
+						},
+						"description": "Completa um swap iniciado\n\nParâmetros:\n- swapId: ID do swap a ser completado"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Swaps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zapp}}/getActiveSwaps",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"getActiveSwaps"
+							]
+						},
+						"description": "Obtém todos os swaps ativos no sistema"
+					},
+					"response": []
+				}
+			],
+			"description": "Operações de swap entre Real Digital e TPFt"
+		},
+		{
+			"name": "📤 Transferências",
+			"item": [
+				{
+					"name": "Transfer Real Digital",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"{{recipient_account}}\",\n    \"amount\": 500.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/transfer",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transfer"
+							]
+						},
+						"description": "Transfere Real Digital para outra conta\n\nParâmetros:\n- to: Endereço da conta de destino\n- amount: Quantidade a ser transferida"
+					},
+					"response": []
+				},
+				{
+					"name": "Transfer TPFt",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"{{recipient_account}}\",\n    \"tokenId\": 1,\n    \"amount\": 50\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/transferErc1155",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"transferErc1155"
+							]
+						},
+						"description": "Transfere TPFt para outra conta\n\nParâmetros:\n- to: Endereço da conta de destino\n- tokenId: ID do token TPFt\n- amount: Quantidade a ser transferida"
+					},
+					"response": []
+				}
+			],
+			"description": "Operações de transferência de tokens"
+		},
+		{
+			"name": "⚙️ Configurações",
+			"item": [
+				{
+					"name": "Get System Configuration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zapp}}/config",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"config"
+							]
+						},
+						"description": "Obtém configurações do sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Update System Configuration",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rpcUrl\": \"{{rpc_url}}\",\n    \"chainId\": \"{{chain_id}}\",\n    \"realDigitalContract\": \"{{real_digital_contract}}\",\n    \"tpftContract\": \"{{tpft_contract}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/config",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"config"
+							]
+						},
+						"description": "Atualiza configurações do sistema"
+					},
+					"response": []
+				}
+			],
+			"description": "Configurações do sistema"
+		},
+		{
+			"name": "🧪 Testes de Performance",
+			"item": [
+				{
+					"name": "Bulk Deposits Test",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"operations\": [\n        {\n            \"type\": \"depositErc20\",\n            \"amount\": 100,\n            \"account\": \"{{test_account}}\"\n        },\n        {\n            \"type\": \"depositErc1155\",\n            \"tokenId\": 1,\n            \"amount\": 10,\n            \"account\": \"{{test_account}}\"\n        },\n        {\n            \"type\": \"depositErc20\",\n            \"amount\": 200,\n            \"account\": \"{{test_account}}\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/bulkOperations",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"bulkOperations"
+							]
+						},
+						"description": "Teste de múltiplas operações em lote"
+					},
+					"response": []
+				},
+				{
+					"name": "Concurrent Swaps Test",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"swaps\": [\n        {\n            \"erc20Address\": \"{{real_digital_contract}}\",\n            \"counterParty\": \"{{test_account}}\",\n            \"amountSent\": 100,\n            \"tokenIdReceived\": 1,\n            \"tokenReceivedAmount\": 10\n        },\n        {\n            \"erc20Address\": \"{{real_digital_contract}}\",\n            \"counterParty\": \"{{test_account}}\",\n            \"amountSent\": 200,\n            \"tokenIdReceived\": 2,\n            \"tokenReceivedAmount\": 20\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url_zapp}}/bulkSwaps",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"bulkSwaps"
+							]
+						},
+						"description": "Teste de múltiplos swaps simultâneos"
+					},
+					"response": []
+				}
+			],
+			"description": "Testes de performance e carga"
+		},
+		{
+			"name": "📋 Relatórios",
+			"item": [
+				{
+					"name": "Get Transaction Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zapp}}/report/transactions?startDate={{start_date}}&endDate={{end_date}}",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"report",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "{{start_date}}",
+									"description": "Data de início (YYYY-MM-DD)"
+								},
+								{
+									"key": "endDate",
+									"value": "{{end_date}}",
+									"description": "Data de fim (YYYY-MM-DD)"
+								}
+							]
+						},
+						"description": "Gera relatório de transações por período"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balance Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url_zapp}}/report/balances?account={{test_account}}",
+							"host": [
+								"{{base_url_zapp}}"
+							],
+							"path": [
+								"report",
+								"balances"
+							],
+							"query": [
+								{
+									"key": "account",
+									"value": "{{test_account}}",
+									"description": "Endereço da conta"
+								}
+							]
+						},
+						"description": "Gera relatório de saldos por conta"
+					},
+					"response": []
+				}
+			],
+			"description": "Relatórios e análises"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Script de pré-requisição para configurações automáticas",
+					"console.log('Executando requisição para: ' + pm.request.url);",
+					"",
+					"// Definir timestamp para logs",
+					"pm.globals.set('timestamp', new Date().toISOString());",
+					"",
+					"// Gerar ID único para operações",
+					"pm.globals.set('operation_id', Math.random().toString(36).substr(2, 9));"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Script de teste para validações automáticas",
+					"console.log('Testando resposta da requisição');",
+					"",
+					"// Verificar se a resposta foi bem-sucedida",
+					"pm.test('Status code is 200', function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					"",
+					"// Verificar se a resposta é JSON válido",
+					"pm.test('Response is JSON', function () {",
+					"    pm.response.to.be.json;",
+					"});",
+					"",
+					"// Verificar tempo de resposta",
+					"pm.test('Response time is less than 5000ms', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+					"});",
+					"",
+					"// Verificar estrutura da resposta",
+					"if (pm.response.json()) {",
+					"    pm.test('Response has required fields', function () {",
+					"        const response = pm.response.json();",
+					"        pm.expect(response).to.have.property('status');",
+					"    });",
+					"}",
+					"",
+					"// Salvar dados importantes para próximas requisições",
+					"if (pm.response.json() && pm.response.json().data) {",
+					"    if (pm.response.json().data.commitmentId) {",
+					"        pm.globals.set('commitment_id', pm.response.json().data.commitmentId);",
+					"    }",
+					"    if (pm.response.json().data.swapId) {",
+					"        pm.globals.set('swap_id', pm.response.json().data.swapId);",
+					"    }",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url_zapp",
+			"value": "http://localhost:3000",
+			"type": "string",
+			"description": "URL base da API ZApp"
+		},
+		{
+			"key": "base_url_timber",
+			"value": "http://localhost:3100",
+			"type": "string",
+			"description": "URL base da API Timber"
+		},
+		{
+			"key": "base_url_zokrates",
+			"value": "http://localhost:8080",
+			"type": "string",
+			"description": "URL base do Zokrates"
+		},
+		{
+			"key": "test_account",
+			"value": "0x1234567890abcdef1234567890abcdef12345678",
+			"type": "string",
+			"description": "Conta de teste para operações"
+		},
+		{
+			"key": "recipient_account",
+			"value": "0xabcdef1234567890abcdef1234567890abcdef12",
+			"type": "string",
+			"description": "Conta de destino para transferências"
+		},
+		{
+			"key": "real_digital_contract",
+			"value": "0x3A34C530700E3835794eaE04d2a4F22Ce750eF7e",
+			"type": "string",
+			"description": "Endereço do contrato Real Digital"
+		},
+		{
+			"key": "tpft_contract",
+			"value": "0x4ABDE28B04315C05a4141a875f9B33c9d1440a8E",
+			"type": "string",
+			"description": "Endereço do contrato TPFt"
+		},
+		{
+			"key": "rpc_url",
+			"value": "ws://localhost:8545",
+			"type": "string",
+			"description": "URL do RPC da blockchain"
+		},
+		{
+			"key": "chain_id",
+			"value": "381660001",
+			"type": "string",
+			"description": "Chain ID da rede CBD Real Digital"
+		},
+		{
+			"key": "commitment_id",
+			"value": "",
+			"type": "string",
+			"description": "ID do commitment (preenchido automaticamente)"
+		},
+		{
+			"key": "swap_id",
+			"value": "",
+			"type": "string",
+			"description": "ID do swap (preenchido automaticamente)"
+		},
+		{
+			"key": "start_date",
+			"value": "2025-06-01",
+			"type": "string",
+			"description": "Data de início para relatórios"
+		},
+		{
+			"key": "end_date",
+			"value": "2025-06-30",
+			"type": "string",
+			"description": "Data de fim para relatórios"
+		}
+	]
+} 
